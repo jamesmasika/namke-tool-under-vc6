@@ -1,0 +1,40 @@
+OUTDIR     = .\Debug 
+
+#设置编译标记，初始化为FALSE  
+CFGSET     =  FALSE  
+  
+#定义debug版本的预处理器  
+CCDEBUG    = -DWIN32 -D_DEBUG -D_CONSOLE  
+  
+#定义release版本的预处理器  
+CCNODBG    = -DWIN32 -D_NDEBUG -D_CONSOLE  
+  
+!IFDEF debug  
+CC         = $(CCDEBUG)  
+OUTDIR     = .\Debug  
+CFGSET     =  TRUE  
+!ELSE IFDEF release  
+CC         = $(CCNODBG)  
+OUTDIR= .\Release  
+CFGSET     =  TRUE  
+!ENDIF  
+
+all: $(OUTDIR) $(OUTDIR)\ConsoleTest.exe
+
+$(OUTDIR) :
+	if not exist "$(OUTDIR)" mkdir $(OUTDIR)
+
+clean:
+	if exist $(OUTDIR) del $(OUTDIR)\*.ilk
+	if exist $(OUTDIR) del $(OUTDIR)\*.obj
+	if exist $(OUTDIR) del $(OUTDIR)\*.exe
+
+# compile
+#stdafx.obj: stdafx.cpp
+#	cl -c -D_X86=1 -DWIN32 -D_DEBUG -D_CONSOLE -Istdafx.h stdafx.cpp
+$(OUTDIR)\ConsoleTest.obj: ConsoleTest.cpp 
+	cl -c -D_X86=1 -DWIN32 -D_DEBUG -D_CONSOLE /Fo"$(OUTDIR)\\" /Fd"$(OUTDIR)\\" ConsoleTest.cpp
+
+# link
+$(OUTDIR)\ConsoleTest.exe: $(OUTDIR)\ConsoleTest.obj
+	link /INCREMENTAL:YES /NOLOGO /subsystem:console /out:$(OUTDIR)\ConsoleTest.exe $(OUTDIR)\ConsoleTest.obj kernel32.lib
